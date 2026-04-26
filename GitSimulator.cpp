@@ -19,7 +19,7 @@ std::list<Commit>::const_iterator GitSimulator::findCommitById(int id) const {
 
 void GitSimulator::commit(const std::string& msg) {
     commits.push_back(Commit(nextId++, msg));
-    // update current branch pointer
+   
     branches[currentBranch] = &commits.back();
     std::cout << "Commit " << commits.back().id << " created on branch '"
               << currentBranch << "'\n";
@@ -38,7 +38,7 @@ void GitSimulator::checkout(int id) {
         std::cout << "Commit " << id << " not found.\n";
         return;
     }
-    // Detached HEAD: just store the pointer, but we don't update branches
+   
     std::cout << "HEAD now at commit " << id << " (detached)\n";
 }
 
@@ -61,9 +61,9 @@ void GitSimulator::reset(int id) {
         std::cout << "Commit " << id << " not found.\n";
         return;
     }
-    // Erase from it to end
+    
     commits.erase(it, commits.end());
-    // Update branch pointer if needed
+    
     if (!commits.empty())
         branches[currentBranch] = &commits.back();
     else
@@ -88,7 +88,7 @@ void GitSimulator::stashPop() {
     }
     Commit* stashed = stash.top();
     stash.pop();
-    // Re-apply as a new commit (simple)
+    
     commit("Restored from stash: " + stashed->message);
     std::cout << "Stashed commit applied and removed from stash.\n";
 }
@@ -120,13 +120,7 @@ void GitSimulator::merge(const std::string& branchName) {
         std::cout << "Current branch has no commits.\n";
         return;
     }
-    // Simple merge: copy all commit messages from source branch that are not in current
-    // Since we don't track DAG, we just copy all commits from sourceHead backwards
-    // but avoid duplicates by id.
-    // Collect all commit ids from source branch (walk backwards using list)
-    // But we don't have direct prev pointer. Instead, we can iterate over the whole list
-    // and find commits that are part of source branch chain? Complicated.
-    // For simulation, we'll just add a new commit that says "Merged branch X"
+    
     commit("Merged branch '" + branchName + "'");
     std::cout << "Merge completed (simplified).\n";
 }
